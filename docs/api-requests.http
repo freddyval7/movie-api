@@ -1,0 +1,4 @@
+@baseUrl = http://movie-api.test/api
+
+GET {{baseUrl}}/health
+Accept: application/json
