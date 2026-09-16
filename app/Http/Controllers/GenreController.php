@@ -6,18 +6,21 @@ use App\Http\Requests\StoreGenreRequest;
 use App\Http\Requests\UpdateGenreRequest;
 use App\Http\Resources\GenreResource;
 use App\Models\Genre;
+use App\Repositories\Contracts\GenreRepositoryInterface;
 use App\Traits\ApiResponse;
 
 class GenreController extends Controller
 {
     use ApiResponse;
 
+    public function __construct(private GenreRepositoryInterface $genres) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $genres = Genre::all();
+        $genres = $this->genres->all();
 
         return $this->successResponse(GenreResource::collection($genres));
     }
@@ -27,7 +30,7 @@ class GenreController extends Controller
      */
     public function store(StoreGenreRequest $request)
     {
-        $genre = Genre::create($request->validated());
+        $genre = $this->genres->create($request->validated());
 
         return $this->successResponse(new GenreResource($genre), 'Genre created successfully.', 201);
     }
@@ -45,7 +48,7 @@ class GenreController extends Controller
      */
     public function update(UpdateGenreRequest $request, Genre $genre)
     {
-        $genre->update($request->validated());
+        $this->genres->update($genre, $request->validated());
 
         return $this->successResponse(new GenreResource($genre), 'Genre updated successfully.');
     }
@@ -55,7 +58,7 @@ class GenreController extends Controller
      */
     public function destroy(Genre $genre)
     {
-        $genre->delete();
+        $this->genres->delete($genre);
 
         return $this->successResponse(null, 'Genre deleted successfully.');
     }
