@@ -8,6 +8,8 @@ use App\Http\Resources\GenreResource;
 use App\Models\Genre;
 use App\Repositories\Contracts\GenreRepositoryInterface;
 use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class GenreController extends Controller
 {
@@ -18,11 +20,23 @@ class GenreController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $genres = $this->genres->all();
+
+        $genres = $this->genres->filter(
+            filters: $request->only(['search', 'is_active']),
+            sortBy: $request->input('sort_by', 'name'),
+            order: $request->input('order', 'asc'),
+        );
 
         return $this->successResponse(GenreResource::collection($genres));
+    }
+
+    public function showBySlug(string $slug): JsonResponse
+    {
+        $genre = $this->genres->findBySlugOrFail($slug);
+
+        return $this->successResponse(new GenreResource($genre));
     }
 
     /**
