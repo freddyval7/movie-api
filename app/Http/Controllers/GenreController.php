@@ -76,4 +76,11 @@ class GenreController extends Controller
 
         return $this->successResponse(null, 'Genre deleted successfully.');
     }
+
+    public function restore(int $id): JsonResponse
+    {
+        $this->genres->restore($id);
+
+        return $this->successResponse(null, 'Genre restored successfully.');
+    }
 }

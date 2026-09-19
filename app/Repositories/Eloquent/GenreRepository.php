@@ -43,4 +43,12 @@ class GenreRepository extends BaseRepository implements GenreRepositoryInterface
     {
         return Genre::where('slug', $slug)->firstOrFail();
     }
+
+    public function restore(int $id): Model
+    {
+        $genre = Genre::withTrashed()->findOrFail($id);
+        $genre->restore();
+
+        return $genre->refresh();
+    }
 }

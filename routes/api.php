@@ -8,4 +8,6 @@ Route::get('/health', HealthController::class);
 
 Route::apiResource('genres', GenreController::class);
 
+Route::post('/genres/{id}/restore', [GenreController::class, 'restore']);
+
 Route::get('/genres/slug/{slug}', [GenreController::class, 'showBySlug']);
