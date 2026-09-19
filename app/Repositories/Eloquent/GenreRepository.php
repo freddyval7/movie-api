@@ -30,7 +30,8 @@ class GenreRepository extends BaseRepository implements GenreRepositoryInterface
 
         return Genre::query()
             ->when(isset($filters['search']), function ($query) use ($filters) {
-                return $query->where('name', 'ilike', "%{$filters['search']}%");
+                return $query->whereRaw('LOWER(name) LIKE ?',
+                    ['%'.strtolower($filters['search']).'%']);
             })
             ->when(isset($filters['is_active']), function ($query) use ($filters) {
                 return $query->where('is_active', filter_var($filters['is_active'], FILTER_VALIDATE_BOOLEAN));
