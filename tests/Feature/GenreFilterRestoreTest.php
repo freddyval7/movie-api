@@ -49,3 +49,25 @@ it('ignores an invalid sort column', function () {
     $response->assertStatus(200);
     $response->assertJsonCount(2, 'data');
 });
+
+it('returns the correct genre by slug', function () {
+    Genre::factory()->create(['name' => 'Ciencia Ficción', 'slug' => 'ciencia-ficcion']);
+
+    $response = $this->getJson('api/genres/slug/ciencia-ficcion');
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('data.slug', 'ciencia-ficcion');
+});
+
+it('restores a soft deleted genre', function () {
+    $genre = Genre::factory()->create();
+    $genre->delete();
+
+    $this->assertSoftDeleted('genres', ['id' => $genre->id]);
+
+    $response = $this->postJson('api/genres/'.$genre->id.'/restore');
+
+    $response->assertStatus(200);
+
+    $this->assertDatabaseHas('genres', ['id' => $genre->id]);
+});
