@@ -52,9 +52,9 @@ class GenreController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Genre $genre)
+    public function show(string $id)
     {
-        return $this->successResponse(new GenreResource($genre));
+        return $this->successResponse(new GenreResource($this->genres->findOrFail($id)));
     }
 
     /**
