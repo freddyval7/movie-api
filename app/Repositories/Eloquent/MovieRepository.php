@@ -40,7 +40,7 @@ class MovieRepository extends BaseRepository implements MovieRepositoryInterface
         $query->when($filters['genre_id'] ?? null,
             function ($query, $genreId) {
                 return $query->whereHas('genres', function ($subQuery) use ($genreId) {
-                    $subQuery->where('genre.id', $genreId);
+                    $subQuery->where('genres.id', $genreId);
                 });
             });
 
