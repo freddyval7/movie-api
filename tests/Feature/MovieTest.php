@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Genre;
 use App\Models\Movie;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -59,4 +60,41 @@ it('soft deletes a movie on destroy', function () {
     $this->deleteJson("api/movies/{$movie->id}");
 
     $this->assertSoftDeleted('movies', ['id' => $movie->id]);
+});
+
+it('syncs genres when provided on store', function () {
+    $genres = Genre::factory()->count(2)->create();
+    $genreIds = $genres->pluck('id')->toArray();
+
+    $payload = [
+        'title' => 'Test movie',
+        'year' => '1988',
+        'rating' => '8.5',
+        'genre_ids' => $genreIds,
+    ];
+
+    $response = $this->postJson('api/movies', $payload);
+
+    $response->assertCreated();
+
+    $movie = Movie::latest()->first();
+    $this->assertCount(2, $movie->genres);
+    $this->assertEquals(
+        $genres->pluck('id')->sort()->values(), $movie->genres->pluck('id')->sort()->values()
+    );
+});
+
+it('validates genre_ids exist on store', function () {
+    $payload = [
+        'title' => 'Test movie',
+        'year' => '1988',
+        'rating' => '8.5',
+        'genre_ids' => [999],
+    ];
+
+    $response = $this->postJson('api/movies', $payload);
+
+    $response->assertUnprocessable();
+    $response->assertJsonPath('message', 'El campo genre_ids.0 no existe.');
+    $response->assertJsonValidationErrors(['genre_ids.0']);
 });
