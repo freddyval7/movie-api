@@ -15,7 +15,7 @@ class UpdateMovieRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['sometimes', 'string', 'max:255', Rule::unique('movies', 'title')->ignore($this->id)],
+            'title' => ['sometimes', 'string', 'max:255', Rule::unique('movies', 'title')->ignore($this->route('movie'))],
             'year' => ['sometimes', 'integer', 'min:1888', 'max:2100'],
             'synopsis' => ['sometimes', 'string', 'max:10000'],
             'rating' => ['sometimes', 'numeric', 'min:0', 'max:10'],
