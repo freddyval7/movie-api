@@ -62,6 +62,8 @@ it('soft deletes a movie on destroy', function () {
     $this->assertSoftDeleted('movies', ['id' => $movie->id]);
 });
 
+// Movies with Genres
+
 it('syncs genres when provided on store', function () {
     $genres = Genre::factory()->count(2)->create();
     $genreIds = $genres->pluck('id')->toArray();
