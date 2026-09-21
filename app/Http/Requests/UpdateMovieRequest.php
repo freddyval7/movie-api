@@ -24,7 +24,7 @@ class UpdateMovieRequest extends FormRequest
             'poster' => ['sometimes', 'string'],
             'is_active' => ['sometimes', 'boolean'],
             'genre_ids' => ['sometimes', 'array'],
-            'genre_ids.*' => ['integer', 'existes:genres,id'],
+            'genre_ids.*' => ['integer', 'exists:genres,id'],
         ];
     }
 }
