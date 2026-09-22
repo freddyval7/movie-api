@@ -49,7 +49,7 @@ class MovieController extends Controller
 
         $movie->load('genres');
 
-        return $this->successResponse(new MovieResource($movie), $movie->title.' created successfully');
+        return $this->successResponse(new MovieResource($movie), $movie->title.' created successfully', 201);
     }
 
     /**

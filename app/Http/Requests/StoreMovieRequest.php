@@ -23,7 +23,7 @@ class StoreMovieRequest extends FormRequest
             'poster' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
             'genre_ids' => ['nullable', 'array'],
-            'genre_ids.*' => ['integer', 'existes:genres,id'],
+            'genre_ids.*' => ['integer', 'exists:genres,id'],
         ];
     }
 }
