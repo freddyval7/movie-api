@@ -1,6 +1,7 @@
 @baseUrl = http://movie-api.test/api
 @genreId = 1
 @movieId=27
+@token = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbW92aWUtYXBpLnRlc3QvYXBpL2F1dGg6YXBpL3JlZnJlc2giLCJpYXQiOjE3OTAxMDg5MTgsImV4cCI6MTc5MDI4MTgxMiwibmJmIjoxNzkwMTA5MDEyLCJqdGkiOiJQQUFpT0xhS1l6Q3pzdkpvIiwic3ViIjoiNCIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.ekg93oO0DJynxXpunPFnYUGRtj9adwNsvzuBake9QLs
 
 GET {{baseUrl}}/health
 Accept: application/json
@@ -95,4 +96,56 @@ Accept: application/json
 
 ### Eliminar una película (soft delete)
 DELETE {{baseUrl}}/movies/{{movieId}}
+Accept: application/json
+
+
+### =============================
+### AUTENTICACIÓN (JWT)
+### =============================
+
+# Pega aquí el access_token que devuelve login o register
+
+### Registrar un usuario
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Teddy Paz",
+  "email": "teddy@movie-api.test",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+
+###
+
+### Iniciar sesión
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "teddy@movie-api.test",
+  "password": "password123"
+}
+
+###
+
+### Ver usuario autenticado (requiere token)
+GET {{baseUrl}}/auth:api/me
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### Refrescar token (renovar)
+POST {{baseUrl}}/auth:api/refresh
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### Cerrar sesión
+POST {{baseUrl}}/auth:api/logout
+Authorization: Bearer {{token}}
 Accept: application/json
