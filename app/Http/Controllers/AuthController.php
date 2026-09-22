@@ -68,4 +68,20 @@ class AuthController extends Controller
     {
         return $this->successResponse(new UserResource(Auth::guard('api')->user()));
     }
+
+    public function logout()
+    {
+        Auth::guard('api')->logout();
+
+        return $this->successResponse(null, 'User logged out successfully');
+    }
+
+    public function refresh()
+    {
+        $token = Auth::guard('api')->refresh();
+
+        return $this->successResponse(
+            $this->tokenPayload(Auth::guard('api')->user(), $token)
+        );
+    }
 }
