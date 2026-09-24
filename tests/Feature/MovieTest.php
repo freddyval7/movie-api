@@ -29,7 +29,7 @@ it('creates a movie with auto slug on store', function () {
         'rating' => '8.5',
     ];
 
-    $response = $this->postJson('api/movies', $payload);
+    $response = $this->actingAs(editor(), 'api')->postJson('api/movies', $payload);
 
     $response->assertStatus(201);
     $response->assertJsonPath('data.title', 'Chucky');
@@ -46,7 +46,7 @@ it('creates a movie with auto slug on store', function () {
 it('modifies a movie with auto slug on update', function () {
     $movie = Movie::factory()->create(['title' => 'Chucky', 'year' => 1988, 'rating' => 8]);
 
-    $response = $this->putJson("api/movies/{$movie->id}", ['title' => 'Child\'s Play']);
+    $response = $this->actingAs(editor(), 'api')->putJson("api/movies/{$movie->id}", ['title' => 'Child\'s Play']);
     // dd($response->content());
     $response->assertStatus(200)
         ->assertJsonPath('data.title', 'Child\'s Play')
@@ -57,7 +57,7 @@ it('modifies a movie with auto slug on update', function () {
 it('soft deletes a movie on destroy', function () {
     $movie = Movie::factory()->create();
 
-    $this->deleteJson("api/movies/{$movie->id}");
+    $this->actingAs(admin(), 'api')->deleteJson("api/movies/{$movie->id}");
 
     $this->assertSoftDeleted('movies', ['id' => $movie->id]);
 });
@@ -75,7 +75,7 @@ it('syncs genres when provided on store', function () {
         'genre_ids' => $genreIds,
     ];
 
-    $response = $this->postJson('api/movies', $payload);
+    $response = $this->actingAs(editor(), 'api')->postJson('api/movies', $payload);
 
     $response->assertCreated();
 
@@ -94,7 +94,7 @@ it('validates genre_ids exist on store', function () {
         'genre_ids' => [999],
     ];
 
-    $response = $this->postJson('api/movies', $payload);
+    $response = $this->actingAs(editor(), 'api')->postJson('api/movies', $payload);
 
     $response->assertUnprocessable();
     $response->assertJsonPath('message', 'El campo genre_ids.0 no existe.');

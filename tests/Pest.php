@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -43,6 +44,16 @@ expect()->extend('toBeOne', function () {
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
+
+function admin(): User
+{
+    return User::factory()->create(['role' => 'admin']);
+}
+
+function editor(): User
+{
+    return User::factory()->create(['role' => 'editor']);
+}
 
 function something()
 {

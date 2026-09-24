@@ -27,7 +27,7 @@ it('creates a genre with auto slug on store', function () {
         'description' => 'A comedy',
     ];
 
-    $response = $this->postJson('api/genres', $payload);
+    $response = $this->actingAs(editor(), 'api')->postJson('api/genres', $payload);
 
     $response->assertStatus(201);
     $response->assertJsonPath('data.name', 'Comedy');
@@ -46,7 +46,7 @@ it('modifies a genre with auto slug on update', function () {
         'description' => 'A horror',
     ]);
 
-    $response = $this->putJson("api/genres/{$genre->id}", ['name' => 'Classic Horror']);
+    $response = $this->actingAs(editor(), 'api')->putJson("api/genres/{$genre->id}", ['name' => 'Classic Horror']);
 
     $response->assertStatus(200);
     $response->assertJsonPath('data.name', 'Classic Horror');
@@ -62,7 +62,7 @@ it('modifies a genre with auto slug on update', function () {
 it('soft deletes a genre on destroy', function () {
     $genre = Genre::factory()->create();
 
-    $this->deleteJson("api/genres/{$genre->id}");
+    $this->actingAs(admin(), 'api')->deleteJson("api/genres/{$genre->id}");
 
     $this->assertSoftDeleted('genres', ['id' => $genre->id]);
 });
