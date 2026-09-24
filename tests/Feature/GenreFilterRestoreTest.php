@@ -65,7 +65,7 @@ it('restores a soft deleted genre', function () {
 
     $this->assertSoftDeleted('genres', ['id' => $genre->id]);
 
-    $response = $this->postJson('api/genres/'.$genre->id.'/restore');
+    $response = $this->actingAs(admin(), 'api')->postJson('api/genres/'.$genre->id.'/restore');
 
     $response->assertStatus(200);
 

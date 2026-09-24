@@ -13,7 +13,7 @@ it('creates user and returns token on register', function () {
         'password_confirmation' => 'password',
     ];
 
-    $response = $this->post('/api/auth/register', $payload);
+    $response = $this->actingAs(editor(), 'api')->post('/api/auth/register', $payload);
 
     $response->assertStatus(201);
     $response->assertJsonStructure([
@@ -77,15 +77,13 @@ it('returns user with valid token on me', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user, 'api')
-        ->getJson('/api/auth:api/me')
+        ->getJson('/api/auth/me')
         ->assertStatus(200)
         ->assertJsonPath('data.email', $user->email);
 });
 
 it('succedes with valid token on logout', function () {
-    $user = User::factory()->create();
-
-    $this->actingAs($user, 'api')
-        ->postJson('/api/auth:api/logout')
+    $this->actingAs(admin(), 'api')
+        ->postJson('/api/auth/logout')
         ->assertStatus(200);
 });
