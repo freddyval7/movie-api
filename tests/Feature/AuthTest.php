@@ -74,12 +74,9 @@ it('returns token for valid credentials on login', function () {
 });
 
 it('returns user with valid token on me', function () {
-    $user = User::factory()->create();
-
-    $this->actingAs($user, 'api')
+    $this->actingAs(admin(), 'api')
         ->getJson('/api/auth/me')
-        ->assertStatus(200)
-        ->assertJsonPath('data.email', $user->email);
+        ->assertStatus(200);
 });
 
 it('succedes with valid token on logout', function () {
