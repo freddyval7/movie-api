@@ -6,6 +6,7 @@ use App\Models\Genre;
 use App\Repositories\Contracts\GenreRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class GenreRepository extends BaseRepository implements GenreRepositoryInterface
 {
@@ -28,16 +29,30 @@ class GenreRepository extends BaseRepository implements GenreRepositoryInterface
 
         $order = strtolower($order) === 'desc' ? 'desc' : 'asc';
 
-        return Genre::query()
-            ->when(isset($filters['search']), function ($query) use ($filters) {
-                return $query->whereRaw('LOWER(name) LIKE ?',
-                    ['%'.strtolower($filters['search']).'%']);
-            })
-            ->when(isset($filters['is_active']), function ($query) use ($filters) {
-                return $query->where('is_active', filter_var($filters['is_active'], FILTER_VALIDATE_BOOLEAN));
-            })
-            ->orderBy($sortBy, $order)
-            ->get();
+        $key = 'genres.index.'.md5(
+            serialize(
+                compact('filters', 'sortBy', 'order')
+            )
+        );
+
+        $genres = Cache::remember(
+            $key, now()->addMinutes(30),
+            function () use ($filters, $sortBy, $order) {
+                return Genre::query()
+                    ->when(isset($filters['search']), function ($query) use ($filters) {
+                        return $query->whereRaw('LOWER(name) LIKE ?',
+                            ['%'.strtolower($filters['search']).'%']);
+                    })
+                    ->when(isset($filters['is_active']), function ($query) use ($filters) {
+                        return $query->where('is_active', filter_var($filters['is_active'], FILTER_VALIDATE_BOOLEAN));
+                    })
+                    ->orderBy($sortBy, $order)
+                    ->get()
+                    ->toArray();
+            }
+        );
+
+        return Genre::hydrate($genres);
     }
 
     public function findBySlugOrFail(string $slug): Model
