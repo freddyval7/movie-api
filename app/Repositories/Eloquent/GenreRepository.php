@@ -35,7 +35,7 @@ class GenreRepository extends BaseRepository implements GenreRepositoryInterface
             )
         );
 
-        $genres = Cache::remember(
+        $json = Cache::remember(
             $key, now()->addMinutes(30),
             function () use ($filters, $sortBy, $order) {
                 return Genre::query()
@@ -48,11 +48,11 @@ class GenreRepository extends BaseRepository implements GenreRepositoryInterface
                     })
                     ->orderBy($sortBy, $order)
                     ->get()
-                    ->toArray();
+                    ->toJson();
             }
         );
 
-        return Genre::hydrate($genres);
+        return Genre::hydrate(json_decode($json, true));
     }
 
     public function findBySlugOrFail(string $slug): Model

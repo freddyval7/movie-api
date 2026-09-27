@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\Genre;
 use App\Models\Movie;
 use App\Repositories\Contracts\MovieRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -30,7 +31,7 @@ class MovieRepository extends BaseRepository implements MovieRepositoryInterface
             )
         );
 
-        $movies = Cache::remember(
+        $json = Cache::remember(
             $key, now()->addMinutes(30),
             function () use ($filters, $sortBy, $order) {
 
@@ -61,11 +62,19 @@ class MovieRepository extends BaseRepository implements MovieRepositoryInterface
 
                 return $query->orderBy($sortColumn, $order)
                     ->get()
-                    ->toArray();
+                    ->toJson();
             }
         );
+        $data = json_decode($json, true);
 
-        return Movie::hydrate($movies);
+        $movies = Movie::hydrate($data);
+
+        $movies->each(function (Movie $movie, int $i) use ($data): void {
+            unset($movie->genres);
+            $movie->setRelation('genres', Genre::hydrate($data[$i]['genres'] ?? []));
+        });
+
+        return $movies;
     }
 
     public function syncGenres(Movie $movie, array $genresIds): void
