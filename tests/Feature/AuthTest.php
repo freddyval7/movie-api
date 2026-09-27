@@ -13,7 +13,7 @@ it('creates user and returns token on register', function () {
         'password_confirmation' => 'password',
     ];
 
-    $response = $this->actingAs(editor(), 'api')->post('/api/auth/register', $payload);
+    $response = $this->actingAs(editor(), 'api')->post('/api/v1/auth/register', $payload);
 
     $response->assertStatus(201);
     $response->assertJsonStructure([
@@ -35,14 +35,14 @@ it('does not expose password on register', function () {
         'password_confirmation' => 'password',
     ];
 
-    $response = $this->post('/api/auth/register', $payload);
+    $response = $this->post('/api/v1/auth/register', $payload);
 
     $response->assertStatus(201);
     expect($response->json('data.user'))->not->toHaveKey('password');
 });
 
 it('requires all fields on register', function () {
-    $response = $this->post('/api/auth/register', []);
+    $response = $this->post('/api/v1/auth/register', []);
 
     $response->assertStatus(422);
     $response->assertJsonValidationErrors(['name', 'email', 'password']);
@@ -56,7 +56,7 @@ it('returns token for valid credentials on login', function () {
         ]
     );
 
-    $response = $this->postJson('/api/auth/login', [
+    $response = $this->postJson('/api/v1/auth/login', [
         'email' => 'john@example.com',
         'password' => 'password',
     ]);
@@ -75,12 +75,12 @@ it('returns token for valid credentials on login', function () {
 
 it('returns user with valid token on me', function () {
     $this->actingAs(admin(), 'api')
-        ->getJson('/api/auth/me')
+        ->getJson('/api/v1/auth/me')
         ->assertStatus(200);
 });
 
 it('succedes with valid token on logout', function () {
     $this->actingAs(admin(), 'api')
-        ->postJson('/api/auth/logout')
+        ->postJson('/api/v1/auth/logout')
         ->assertStatus(200);
 });

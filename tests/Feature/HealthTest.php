@@ -1,7 +1,7 @@
 <?php
 
 it('returns ok on health endpoint', function () {
-    $response = $this->get('/api/health');
+    $response = $this->get('/api/v1/health');
 
     $response->assertStatus(200);
     $response->assertJson(
