@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\GenreController;
-use App\Http\Controllers\HealthController;
-use App\Http\Controllers\MovieController;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\GenreController;
+use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\MovieController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class);
