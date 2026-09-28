@@ -42,7 +42,6 @@ Route::prefix('v1')->group(function () {
             Route::post('genres', [GenreController::class, 'store']);
             Route::put('genres/{genre}', [GenreController::class, 'update']);
             Route::patch('genres/{genre}', [GenreController::class, 'update']);
-            Route::post('movies/{movie}/poster', [PosterController::class, 'store']);
         });
 
         Route::middleware('role:admin')->group(function () {
@@ -55,6 +54,7 @@ Route::prefix('v1')->group(function () {
             Route::post('movies', [MovieController::class, 'store']);
             Route::put('movies/{movie}', [MovieController::class, 'update']);
             Route::patch('movies/{movie}', [MovieController::class, 'update']);
+            Route::post('movies/{movie}/poster', [PosterController::class, 'store']);
         });
 
         Route::middleware('role:admin')->group(function () {
