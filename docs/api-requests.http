@@ -1,6 +1,7 @@
 @baseUrlV1 = http://movie-api.test/api/v1
+@baseUrlV2 = http://movie-api.test/api/v2
 @genreId = 1
-@movieId=27
+@movieId=14
 @token = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbW92aWUtYXBpLnRlc3QvYXBpL3YxL2F1dGgvbG9naW4iLCJpYXQiOjE3OTA1MjI4NzMsImV4cCI6MTc5MDY5NTY3MywibmJmIjoxNzkwNTIyODczLCJqdGkiOiJCZ1JWQ1dkM2o2dUw5ajJFIiwic3ViIjoiNCIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.rFnpGqlxfHHgpQs_qO20t2CmInP8Kuojhx-xdA5FnXY
 
 GET {{baseUrlV1}}/health
@@ -148,4 +149,13 @@ Accept: application/json
 ### Cerrar sesión
 POST {{baseUrlV1}}/auth/logout
 Authorization: Bearer {{token}}
+Accept: application/json
+
+
+### Listar todas las películas con la V2
+GET {{baseUrlV2}}/movies
+Accept: application/json
+
+### Ver una película con la V2
+GET {{baseUrlV2}}/movies/{{movieId}}
 Accept: application/json
