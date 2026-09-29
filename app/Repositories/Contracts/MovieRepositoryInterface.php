@@ -3,7 +3,7 @@
 namespace App\Repositories\Contracts;
 
 use App\Models\Movie;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface MovieRepositoryInterface extends BaseRepositoryInterface
 {
@@ -11,7 +11,8 @@ interface MovieRepositoryInterface extends BaseRepositoryInterface
         array $filters,
         string $sortBy = 'title',
         string $order = 'asc',
-    ): Collection;
+        int $perPage = 15,
+    ): LengthAwarePaginator;
 
     public function syncGenres(Movie $movie, array $genreIds): void;
 }

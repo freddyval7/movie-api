@@ -2,11 +2,9 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Models\Genre;
 use App\Models\Movie;
 use App\Repositories\Contracts\MovieRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class MovieRepository extends BaseRepository implements MovieRepositoryInterface
 {
@@ -23,58 +21,37 @@ class MovieRepository extends BaseRepository implements MovieRepositoryInterface
     public function filter(
         array $filters,
         string $sortBy = 'title',
-        string $order = 'asc'
-    ): Collection {
-        $key = 'movies.index.'.md5(
-            serialize(
-                compact('filters', 'sortBy', 'order')
-            )
-        );
+        string $order = 'asc',
+        int $perPage = 15,
+    ): LengthAwarePaginator {
+        $query = Movie::with('genres');
+        $query->when($filters['search'] ?? null,
+            function ($query, $search) {
+                return $query->whereRaw('LOWER(title) LIKE ?',
+                    ['%'.strtolower($search).'%']);
+            });
+        $query->when($filters['year'] ?? null,
+            function ($query, $year) {
+                return $query->where('year', $year);
+            });
+        $query->when($filters['min_rating'] ?? null,
+            function ($query, $minRating) {
+                return $query->where('rating', '>=', $minRating);
+            });
+        $query->when($filters['genre_id'] ?? null,
+            function ($query, $genreId) {
+                return $query->whereHas('genres', function ($subQuery) use ($genreId) {
+                    $subQuery->where('genres.id', $genreId);
+                });
+            });
 
-        $json = Cache::remember(
-            $key, now()->addMinutes(30),
-            function () use ($filters, $sortBy, $order) {
+        $sortColumn = in_array($sortBy, self::SORTABLE) ? $sortBy : 'title';
 
-                $query = Movie::with('genres');
-                $query->when($filters['search'] ?? null,
-                    function ($query, $search) {
-                        return $query->whereRaw('LOWER(title) LIKE ?',
-                            ['%'.strtolower($search).'%']);
-                    });
-                $query->when($filters['year'] ?? null,
-                    function ($query, $year) {
-                        return $query->where('year', $year);
-                    });
-                $query->when($filters['min_rating'] ?? null,
-                    function ($query, $minRating) {
-                        return $query->where('rating', '>=', $minRating);
-                    });
-                $query->when($filters['genre_id'] ?? null,
-                    function ($query, $genreId) {
-                        return $query->whereHas('genres', function ($subQuery) use ($genreId) {
-                            $subQuery->where('genres.id', $genreId);
-                        });
-                    });
+        $order = $order === 'asc' ? 'asc' : 'desc';
 
-                $sortColumn = in_array($sortBy, self::SORTABLE) ? $sortBy : 'title';
+        return $query->orderBy($sortColumn, $order)
+            ->paginate($perPage);
 
-                $order = $order === 'asc' ? 'asc' : 'desc';
-
-                return $query->orderBy($sortColumn, $order)
-                    ->get()
-                    ->toJson();
-            }
-        );
-        $data = json_decode($json, true);
-
-        $movies = Movie::hydrate($data);
-
-        $movies->each(function (Movie $movie, int $i) use ($data): void {
-            unset($movie->genres);
-            $movie->setRelation('genres', Genre::hydrate($data[$i]['genres'] ?? []));
-        });
-
-        return $movies;
     }
 
     public function syncGenres(Movie $movie, array $genresIds): void
