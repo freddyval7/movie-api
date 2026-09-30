@@ -17,7 +17,7 @@ class MovieSynopsisService
         $response = (new MovieSynopsisAgent)->prompt(
             $prompt,
             provider: Lab::OpenRouter,
-            model: 'qwen/qwen3.8-27b:free',
+            model: 'dots-studio/dots-3-note-preview:free',
         );
 
         $movie->synopsis = $response->text;
