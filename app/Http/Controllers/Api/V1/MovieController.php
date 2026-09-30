@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateMovieRequest;
 use App\Http\Resources\MovieResource;
 use App\Models\Movie;
 use App\Repositories\Contracts\MovieRepositoryInterface;
+use App\Services\MovieSynopsisService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -91,5 +92,12 @@ class MovieController extends Controller
         $this->movieRepository->delete($movie);
 
         return response()->noContent();
+    }
+
+    public function generateSynopsis(Movie $movie, MovieSynopsisService $service)
+    {
+        $movie = $service->generateSynopsis($movie);
+
+        return $this->successResponse(new MovieResource($movie), $movie->title.' synopsis generated successfully');
     }
 }

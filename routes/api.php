@@ -55,6 +55,7 @@ Route::prefix('v1')->group(function () {
             Route::put('movies/{movie}', [MovieController::class, 'update']);
             Route::patch('movies/{movie}', [MovieController::class, 'update']);
             Route::post('movies/{movie}/poster', [PosterController::class, 'store']);
+            Route::post('movies/{movie}/synopsis', [MovieController::class, 'generateSynopsis']);
         });
 
         Route::middleware('role:admin')->group(function () {
