@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMovieRequest;
 use App\Http\Requests\UpdateMovieRequest;
 use App\Http\Resources\MovieResource;
-use App\Jobs\GenerateMovieSynopsis;
 use App\Models\Movie;
 use App\Repositories\Contracts\MovieRepositoryInterface;
 use App\Traits\ApiResponse;
@@ -92,12 +91,5 @@ class MovieController extends Controller
         $this->movieRepository->delete($movie);
 
         return response()->noContent();
-    }
-
-    public function generateSynopsis(Movie $movie)
-    {
-        GenerateMovieSynopsis::dispatch($movie);
-
-        return $this->successResponse(new MovieResource($movie), 'Synopsis generation queued', 202);
     }
 }
