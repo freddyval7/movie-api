@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AIController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\GenreController;
 use App\Http\Controllers\Api\V1\HealthController;
@@ -55,12 +56,16 @@ Route::prefix('v1')->group(function () {
             Route::put('movies/{movie}', [MovieController::class, 'update']);
             Route::patch('movies/{movie}', [MovieController::class, 'update']);
             Route::post('movies/{movie}/poster', [PosterController::class, 'store']);
+            Route::post('movies/{movie}/synopsis', [AIController::class, 'generateSynopsis']);
         });
 
         Route::middleware('role:admin')->group(function () {
             Route::delete('movies/{movie}', [MovieController::class, 'destroy']);
             Route::post('/movies/{id}/restore', [MovieController::class, 'restore']);
         });
+
+        // Recommendations
+        Route::post('ai/recommendations', [AIController::class, 'generateRecommendations']);
     });
 });
 
